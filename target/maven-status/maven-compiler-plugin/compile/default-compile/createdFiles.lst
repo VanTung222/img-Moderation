@@ -1,0 +1,5 @@
+com\example\vision\ModerationServlet.class
+com\example\vision\SightengineClient.class
+com\mycompany\image\moderation\JakartaRestConfiguration.class
+com\example\vision\VisionAPIClient.class
+com\mycompany\image\moderation\resources\JakartaEE10Resource.class
