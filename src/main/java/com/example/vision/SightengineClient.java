@@ -13,8 +13,8 @@ public class SightengineClient {
     private static final String API_USER = "1405169130";   // Thay bằng API User của bạn
     private static final String API_SECRET = "YCtJEMsNJVgYA9qtzxjcrMwvJ58CvyyV"; // Thay bằng API Secret
 
-   public boolean isImageSafe(byte[] imageBytes) throws IOException, InterruptedException {
-    File tempFile = File.createTempFile("upload-", ".jpg");
+  public boolean isImageSafe(byte[] imageBytes, String contentType) throws IOException, InterruptedException {
+    File tempFile = File.createTempFile("upload-", ".img");
     Files.write(tempFile.toPath(), imageBytes);
 
     String boundary = "Boundary-" + System.currentTimeMillis();
@@ -23,7 +23,8 @@ public class SightengineClient {
 
     writer.append("--" + boundary).append("\r\n");
     writer.append("Content-Disposition: form-data; name=\"media\"; filename=\"" + tempFile.getName() + "\"\r\n");
-    writer.append("Content-Type: image/jpeg\r\n\r\n").flush();
+    writer.append("Content-Type: " + contentType + "\r\n\r\n").flush(); // 👈 Sử dụng content type thực
+
     Files.copy(tempFile.toPath(), byteArrays);
     byteArrays.write("\r\n".getBytes());
     writer.append("--" + boundary + "--").append("\r\n").flush();
@@ -50,6 +51,7 @@ public class SightengineClient {
 
     return nudity < 0.5 && weapon < 0.5 && alcohol < 0.5 && drugs < 0.5;
 }
+
 
 
     // Multipart form-data utility
