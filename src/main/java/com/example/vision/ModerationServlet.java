@@ -24,17 +24,21 @@ public class ModerationServlet extends HttpServlet {
         Part filePart = request.getPart("image");
         InputStream inputStream = filePart.getInputStream();
         byte[] imageBytes = IOUtils.toByteArray(inputStream);
-        String contentType = filePart.getContentType(); // 👈 lấy MIME type
+        String contentType = filePart.getContentType();
 
-        boolean isSafe = false;
         try {
-            isSafe = visionClient.isImageSafe(imageBytes, contentType);
+            SightengineClient.ImageSafetyResult result = visionClient.isImageSafe(imageBytes, contentType);
+            request.setAttribute("isSafe", result.isSafe);
+            request.setAttribute("message", result.isSafe ? "✅ Image is safe." : "❌ Image contains inappropriate content!");
+            if (!result.isSafe) {
+                request.setAttribute("violations", result.violations);
+            }
         } catch (InterruptedException ex) {
             Logger.getLogger(ModerationServlet.class.getName()).log(Level.SEVERE, null, ex);
+            request.setAttribute("isSafe", false);
+            request.setAttribute("message", "❌ Error processing image!");
         }
 
-        request.setAttribute("isSafe", isSafe);
-        request.setAttribute("message", isSafe ? "✅ Ảnh an toàn." : "❌ Ảnh có nội dung không phù hợp!");
         request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 }
